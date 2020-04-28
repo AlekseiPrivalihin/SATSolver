@@ -13,4 +13,4 @@ fun main(args: Array<String>) {
         val solution = Solver().Solve(cnf, numVars)
         println(solution)
     }
-    }
+}
