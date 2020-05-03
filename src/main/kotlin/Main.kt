@@ -11,6 +11,10 @@ fun main(args: Array<String>) {
     } else {
         val (cnf, numVars) = problem
         val solution = Solver().Solve(cnf, numVars)
-        println(solution)
+        if (solution == null) {
+            println("No solution exists!")
+        } else {
+            println(solution.toList())
+        }
     }
 }

@@ -1,28 +1,22 @@
-class Clause(rawClause: List<Int>) {
-    val positive: MutableSet<Int> = mutableSetOf()
-    val negative: MutableSet<Int> = mutableSetOf()
+class Clause {
+    val positive: Set<Int>
+    val negative: Set<Int>
 
-    init {
-        for (i in rawClause) {
-            if (i < 0) {
-                negative.add(-i)
-            } else {
-                positive.add(i)
-            }
-        }
+    constructor(rawClause: List<Int>) {
+        positive = rawClause.filter { it > 0 }.toSet()
+        negative = rawClause.filter { it < 0 }.map { -it }.toSet()
+    }
+
+    constructor(positive: Set<Int>, negative: Set<Int>) {
+        this.positive = positive
+        this.negative = negative
     }
 
     fun isEmpty(): Boolean {
         return positive.isEmpty() && negative.isEmpty()
     }
 
-    fun mergeWith(clause: Clause) {
-        negative.addAll(clause.negative)
-        positive.addAll(clause.positive)
-    }
-
-    fun clear() {
-        negative.clear()
-        positive.clear()
+    fun copy(): Clause {
+        return Clause(positive, negative)
     }
 }
