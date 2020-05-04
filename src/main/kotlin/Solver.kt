@@ -1,5 +1,9 @@
 class Solver {
     fun Solve(cnf: List<Clause>, numVars: Int): Array<Boolean>? {
+        if (cnf.any { it.isEmpty() }) {
+            return null
+        }
+
         val resolvent: MutableList<Clause> = cnf.toMutableList()
         val resolventSet: MutableSet<Clause> = cnf.toMutableSet()
         var i = 0
