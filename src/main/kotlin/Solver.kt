@@ -1,6 +1,7 @@
 class Solver {
     fun Solve(cnf: List<Clause>, numVars: Int): Array<Boolean>? {
         val resolvent: MutableList<Clause> = cnf.toMutableList()
+        val resolventSet: MutableSet<Clause> = cnf.toMutableSet()
         var i = 0
         while (i < resolvent.size) {
             for (j in (i + 1).until(resolvent.size)) {
@@ -17,10 +18,21 @@ class Solver {
                         .minus(intersection)
                         .union(resolvent[i].negative)
 
-                    resolvent.add(Clause(newPositive, newNegative))
-                    if (resolvent.last().isEmpty()) {
+                    val newClause = Clause(newPositive, newNegative)
+                    if (newClause.isEmpty()) {
                         return null
                     }
+
+                    if (newClause.positive
+                            .filter { it in newClause.negative }
+                            .isNotEmpty()
+                        || resolventSet.contains(newClause)) {
+
+                        continue
+                    }
+
+                    resolvent.add(newClause)
+                    resolventSet.add(newClause)
                 }
 
                 val posInJNegInI = resolvent[j].positive
@@ -36,10 +48,21 @@ class Solver {
                         .minus(intersection)
                         .union(resolvent[j].negative)
 
-                    resolvent.add(Clause(newPositive, newNegative))
-                    if (resolvent.last().isEmpty()) {
+                    val newClause = Clause(newPositive, newNegative)
+                    if (newClause.isEmpty()) {
                         return null
                     }
+
+                    if (newClause.positive
+                            .filter { it in newClause.negative }
+                            .isNotEmpty()
+                        || resolventSet.contains(newClause)) {
+
+                        continue
+                    }
+
+                    resolvent.add(newClause)
+                    resolventSet.add(newClause)
                 }
             }
 
@@ -53,8 +76,7 @@ class Solver {
             var minUnset = -1
             for (j in 0.until(resolvent.size)) {
                 val clause = resolvent[j]
-                if (clause.positive.filter { it in clause.negative }.isNotEmpty()
-                    || clause.positive.map { solution[it - 1] }.count{ it } != 0
+                if (clause.positive.map { solution[it - 1] }.count{ it } != 0
                     || clause.negative.map { !solution[it - 1] && isSet[it - 1] }
                         .count{ it } != 0) {
 
